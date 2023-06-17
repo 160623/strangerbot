@@ -50,12 +50,20 @@ func matchUsers() {
 		return
 	}
 
+	processedChatId := make(map[int64]bool)
 	for i, item := range mud {
+
+		if _, ok := processedChatId[item.ChatId]; ok {
+			continue
+		}
 
 		// save match
 		if err := service.ServiceSaveMatch(ctx, mud[i]); err != nil {
 			continue
 		}
+
+		processedChatId[item.ChatId] = true
+		processedChatId[item.MatchChatId] = true
 
 		// find user all user question data
 		userQuestionData, err := repo.GetUserQuestionDataByUser(ctx, item.User.ChatID)
